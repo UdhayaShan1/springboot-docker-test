@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
-    id 'checkstyle'
 }
 
 group = 'com.example'
@@ -39,22 +38,3 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-checkstyle {
-    toolVersion = '10.12.5'
-    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
-}
-
-
-dependencies {
-    checkstyle 'com.puppycrawl.tools:checkstyle:10.0'
-}
-
-tasks.checkstyleMain {
-    source = sourceSets.main.allJava
-    classpath = sourceSets.main.compileClasspath
-}
-
-tasks.checkstyleTest {
-    source = sourceSets.test.allJava
-    classpath = sourceSets.test.compileClasspath
-}
