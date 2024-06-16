@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.docker3.Docker3ApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-06-16T06:59:52" hostname="UDHAYA" time="1.072">
+  <properties/>
+  <testcase name="contextLoads()" classname="com.example.docker3.Docker3ApplicationTests" time="1.072"/>
+  <system-out><![CDATA[14:59:50.907 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.docker3.Docker3ApplicationTests]: Docker3ApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+14:59:51.015 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.docker3.Docker3Application for test class com.example.docker3.Docker3ApplicationTests
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2024-06-16T14:59:51.472+08:00  INFO 18176 --- [docker3] [    Test worker] c.e.docker3.Docker3ApplicationTests      : Starting Docker3ApplicationTests using Java 17.0.8 with PID 18176 (started by udhay in C:\Users\udhay\Desktop\docker3)
+2024-06-16T14:59:51.474+08:00  INFO 18176 --- [docker3] [    Test worker] c.e.docker3.Docker3ApplicationTests      : No active profile set, falling back to 1 default profile: "default"
+2024-06-16T14:59:52.841+08:00  INFO 18176 --- [docker3] [    Test worker] c.e.docker3.Docker3ApplicationTests      : Started Docker3ApplicationTests in 1.642 seconds (process running for 3.041)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
