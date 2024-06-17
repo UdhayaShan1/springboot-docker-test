@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.servlet.http.HttpSession;
 
+import com.docker3.exception.auth.LoginFailedException;
 import com.docker3.exception.auth.UserAlreadyExistsException;
 import com.docker3.model.User;
 import com.docker3.service.AuthService;
@@ -40,6 +41,28 @@ public class AuthController {
         }
         return "login";
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> beginUserLogin(@RequestBody User user , HttpSession session) {
+        try {
+            authService.loginUser(user);
+            session.setAttribute("user", user);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("Logged in");
+        } catch (LoginFailedException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/logout")
+    public String logoutUser(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+
 
     @GetMapping("/register")
     public String registerPage(HttpSession session) {
