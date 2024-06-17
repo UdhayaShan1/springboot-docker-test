@@ -1,8 +1,8 @@
 document.getElementById('registerForm').addEventListener('submit', async function (event) {
     event.preventDefault();
-    const username = document.getElementById('username').value.trim();
+    const username = document.getElementById('username').value.trim().toLowerCase();
     const password = document.getElementById('password').value.trim();
-    const email = document.getElementById('email').value.trim();
+    const email = document.getElementById('email').value.trim().toLowerCase();
     const errorMessageElement = document.getElementById('errorMessage');
 
     // Clear previous error message
@@ -19,12 +19,15 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         return;
     }
 
+    if (password.length < 8) {
+        errorMessageElement.textContent = 'Password must be at least 8 characters long.';
+        return;
+    }
+
     if (!email) {
         errorMessageElement.textContent = 'Email is required.';
         return;
     }
-
-
 
     try {
         const response = await fetch('/register', {

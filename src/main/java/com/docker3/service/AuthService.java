@@ -15,15 +15,14 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public boolean isUserRegistered(String username) {
-        User user = userRepository.findByUsername(username);
-        return user != null;
-    }
-
     public void registerUser(User user) throws RuntimeException {
         if (userRepository.findByUsername(user.getUsername()) != null) {
-            throw new UserAlreadyExistsException("Username already exists!");
+            throw new UserAlreadyExistsException("Username already taken");
         }
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new UserAlreadyExistsException("Email already used");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
