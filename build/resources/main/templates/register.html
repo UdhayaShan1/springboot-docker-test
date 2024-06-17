@@ -4,31 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/register.css">
+
 </head>
 <body>
-<h2>Register</h2>
-<form id="registerForm">
-    <div>
-        <label>Username:</label>
-        <input type="text" id="username" name="username">
+<div class="container">
+    <div class="form-container">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn">Register</button>
+            </div>
+        </form>
+        <div id="errorMessage" class="error-message"></div>
+        <div class="link-container">
+            <a href="/auth/login">Login</a>
+        </div>
     </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" id="password" name="password">
-    </div>
-    <div>
-        <label>Email:</label>
-        <input type="email" id="email" name="email">
-    </div>
-
-    <div>
-        <button type="submit">Register</button>
-    </div>
-</form>
-<div id="errorMessage" style="color: red;"></div>
-
-<a href="/auth/login">Login</a>
+</div>
 
 <script src="/js/register.js"></script>
 </body>
