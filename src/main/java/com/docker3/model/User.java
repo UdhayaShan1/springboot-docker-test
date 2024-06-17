@@ -1,5 +1,8 @@
 package com.docker3.model;
 
+import com.docker3.exception.auth.LoginFailedException;
+import com.docker3.util.PasswordEncoder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
