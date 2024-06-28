@@ -44,9 +44,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> beginUserLogin(@RequestBody User user , HttpSession session) {
+
         try {
-            authService.loginUser(user);
-            session.setAttribute("user", user);
+            User retrievedUser = authService.loginUser(user);
+            session.setAttribute("user", retrievedUser);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body("Logged in");
@@ -86,6 +87,14 @@ public class AuthController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(exception.getMessage());
         }
+    }
+
+    @GetMapping("/order")
+    public String orderPage(HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+        return "orders";
     }
 
 

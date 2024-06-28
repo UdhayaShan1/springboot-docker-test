@@ -30,7 +30,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void loginUser(User user) throws LoginFailedException {
+    public User loginUser(User user) throws LoginFailedException {
         User retrievedUserFromDatabase = userRepository.findByUsername(user.getUsername());
         if (retrievedUserFromDatabase == null) {
             throw new LoginFailedException("User does not exist");
@@ -39,5 +39,6 @@ public class AuthService {
         if (!passwordEncoder.matches(user.getPassword(), retrievedUserFromDatabase.getPassword())) {
             throw new LoginFailedException("Wrong password");
         }
+        return retrievedUserFromDatabase;
     }
 }
