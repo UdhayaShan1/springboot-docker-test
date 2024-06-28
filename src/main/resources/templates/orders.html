@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Orders</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/orders.css">
+</head>
+<body>
+<h1>User Orders</h1>
+<div id="orders-container">
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Name</th>
+            <th>User ID</th>
+            <th>User Name</th>
+        </tr>
+        </thead>
+        <tbody id="orders-table-body">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function() {
+        fetchOrders();
+    });
+
+    function fetchOrders() {
+        $.ajax({
+            url: '/getorders',
+            method: 'GET',
+            success: function(data) {
+                let ordersTableBody = $('#orders-table-body');
+                ordersTableBody.empty();
+                data.forEach(order => {
+                    let row = `
+                        <tr>
+                            <td>${order.orderId}</td>
+                            <td>${order.nameOfOrder}</td>
+                            <td>${order.user.id}</td>
+                            <td>${order.user.username}</td>
+                        </tr>
+                    `;
+                    ordersTableBody.append(row);
+                });
+            },
+            error: function(error) {
+                console.log("Error fetching orders: ", error);
+            }
+        });
+    }
+</script>
+</body>
+</html>
