@@ -36,8 +36,8 @@ function fetchOrders() {
                         <td>${order.nameOfOrder}</td>
                         <td>${order.dateOfOrder}</td>
                         <td>${order.descriptionOfOrder}</td>
-                        <td>${order.user.id}</td>
-                        <td>${order.user.username}</td>
+                        <td>${order.users.id}</td>
+                        <td>${order.users.username}</td>
                         <td><button class="delete-btn" data-id="${order.id}">Delete</button></td>
                     </tr>
                 `;
@@ -56,10 +56,10 @@ function fetchOrders() {
 }
 
 
-document.getElementById("add-order-form").addEventListener('submit', async function (event) {
+document.getElementById("add-orders-form").addEventListener('submit', async function (event) {
     event.preventDefault();
-    const nameOfOrder = document.getElementById("order-name").value.trim();
-    const descriptionOfOrder = document.getElementById("order-description").value.trim();
+    const nameOfOrder = document.getElementById("orders-name").value.trim();
+    const descriptionOfOrder = document.getElementById("orders-description").value.trim();
     const errorMessageElement = document.getElementById("errorMessage");
     errorMessageElement.textContent = '';
 
