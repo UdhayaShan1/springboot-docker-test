@@ -7,15 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.sql.ast.tree.predicate.BooleanExpressionPredicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.docker3.exception.order.OrderNotFoundException;
 import com.docker3.model.Order;
 import com.docker3.model.User;
 import com.docker3.repository.UserRepository;
@@ -87,14 +90,25 @@ public class OrderController {
         order.setOrderId(LocalDateTime.now().format(formatter));
         order.setUser(retrievedUser);
         order.setDateOfOrder(LocalDate.now());
-        System.out.println("#######");
-        System.out.println(order);
-        System.out.println(user);
         orderService.addOrder(order);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(order);
     }
+
+    @DeleteMapping("/deleteorder/{id}")
+    public ResponseEntity<Void> deleteOrderBasedOnId(@PathVariable Long id, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            orderService.deleteOrder(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (OrderNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 
 
 

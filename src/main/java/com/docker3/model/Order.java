@@ -30,6 +30,6 @@ public class Order {
     private LocalDate dateOfOrder;
     @Column
     private String descriptionOfOrder;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User user;
 }
