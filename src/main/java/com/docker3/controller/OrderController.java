@@ -1,5 +1,8 @@
 package com.docker3.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,7 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private UserRepository userRepository;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping("/getallorders")
     public ResponseEntity<List<Order>> getAllOrders() {
@@ -40,15 +44,6 @@ public class OrderController {
         return user.map(
                 value -> ResponseEntity.status(HttpStatus.OK).body(orderService.findAllOrdersByUser(value))).orElseGet(
                 () -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>()));
-    }
-
-    @GetMapping("/getorders")
-    public ResponseEntity<List<Order>> getOrdersOfCurrentUser(HttpSession session) {
-        if (session.getAttribute("user") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        User user = (User) session.getAttribute("user");
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllOrdersByUser(user));
     }
 
 
@@ -66,6 +61,39 @@ public class OrderController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @GetMapping("/getorders")
+    public ResponseEntity<List<Order>> getOrdersOfCurrentUser(HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        User user = (User) session.getAttribute("user");
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllOrdersByUser(user));
+    }
+
+    @PostMapping("/neworder")
+    public ResponseEntity<Order> userAddOrder(@RequestBody Order order, HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        User user = (User) session.getAttribute("user");
+        User retrievedUser = userRepository.findByUsername(user.getUsername());
+        if (retrievedUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        }
+        order.setOrderId(LocalDateTime.now().format(formatter));
+        order.setUser(retrievedUser);
+        order.setDateOfOrder(LocalDate.now());
+        System.out.println("#######");
+        System.out.println(order);
+        System.out.println(user);
+        orderService.addOrder(order);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(order);
     }
 
 
