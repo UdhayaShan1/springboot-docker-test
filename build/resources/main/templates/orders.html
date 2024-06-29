@@ -15,6 +15,8 @@
         <tr>
             <th>Order ID</th>
             <th>Order Name</th>
+            <th>Order Date</th>
+            <th>Order Description</th>
             <th>User ID</th>
             <th>User Name</th>
         </tr>
@@ -25,35 +27,18 @@
     </table>
 </div>
 
-<script>
-    $(document).ready(function() {
-        fetchOrders();
-    });
+<h2>Add Order</h2>
+<form id="add-order-form">
+    <label for="order-name">Order Name:</label>
+    <input type="text" id="order-name" name="orderName" required><br><br>
 
-    function fetchOrders() {
-        $.ajax({
-            url: '/getorders',
-            method: 'GET',
-            success: function(data) {
-                let ordersTableBody = $('#orders-table-body');
-                ordersTableBody.empty();
-                data.forEach(order => {
-                    let row = `
-                        <tr>
-                            <td>${order.orderId}</td>
-                            <td>${order.nameOfOrder}</td>
-                            <td>${order.user.id}</td>
-                            <td>${order.user.username}</td>
-                        </tr>
-                    `;
-                    ordersTableBody.append(row);
-                });
-            },
-            error: function(error) {
-                console.log("Error fetching orders: ", error);
-            }
-        });
-    }
-</script>
+    <label for="order-description">Description of Order:</label>
+    <input type="text" id="order-description" name="orderDescription" required><br><br>
+
+    <button type="submit">Add Order</button>
+</form>
+<div id="errorMessage" class="error-message"></div>
+
+<script src="/js/order.js"></script>
 </body>
 </html>
