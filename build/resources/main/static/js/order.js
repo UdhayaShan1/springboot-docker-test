@@ -2,6 +2,26 @@ $(document).ready(function() {
     fetchOrders();
 });
 
+async function deleteOrder(id) {
+    try {
+        const response = await fetch(`/deleteorder/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            fetchOrders();
+        } else {
+            window.location.href = '/home';
+            errorMessageElement.textContent = await response.text();
+        }
+    } catch (error) {
+        errorMessageElement.textContent = 'An error occurred. Please try again.';
+    }
+}
+
 function fetchOrders() {
     $.ajax({
         url: '/getorders',
@@ -18,9 +38,15 @@ function fetchOrders() {
                         <td>${order.descriptionOfOrder}</td>
                         <td>${order.user.id}</td>
                         <td>${order.user.username}</td>
+                        <td><button class="delete-btn" data-id="${order.id}">Delete</button></td>
                     </tr>
                 `;
                 ordersTableBody.append(row);
+            });
+
+            $('.delete-btn').click(function() {
+                const id = $(this).data('id');
+                deleteOrder(id);
             });
         },
         error: function(error) {
