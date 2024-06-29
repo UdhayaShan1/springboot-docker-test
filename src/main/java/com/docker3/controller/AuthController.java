@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import com.docker3.exception.auth.LoginFailedException;
 import com.docker3.exception.auth.UserAlreadyExistsException;
-import com.docker3.model.User;
+import com.docker3.model.Users;
 import com.docker3.service.AuthService;
 
 @Controller
@@ -43,11 +43,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> beginUserLogin(@RequestBody User user , HttpSession session) {
+    public ResponseEntity<String> beginUserLogin(@RequestBody Users users, HttpSession session) {
 
         try {
-            User retrievedUser = authService.loginUser(user);
-            session.setAttribute("user", retrievedUser);
+            Users retrievedUsers = authService.loginUser(users);
+            session.setAttribute("user", retrievedUsers);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body("Logged in");
@@ -74,14 +74,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> beginUserRegistration(@RequestBody User newUser) {
+    public ResponseEntity<String> beginUserRegistration(@RequestBody Users newUsers) {
         try {
-            System.out.println("TEST" + newUser);
+            System.out.println("TEST" + newUsers);
 
-            authService.registerUser(newUser);
+            authService.registerUser(newUsers);
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(newUser.getUsername() + " has been registered!");
+                    .body(newUsers.getUsername() + " has been registered!");
         } catch (UserAlreadyExistsException exception) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

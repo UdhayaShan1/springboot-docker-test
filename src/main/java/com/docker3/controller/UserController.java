@@ -8,10 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import com.docker3.model.User;
+import com.docker3.model.Users;
 import com.docker3.service.AuthService;
 import com.docker3.service.UserService;
 
@@ -23,12 +21,12 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/getusers")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<Users>> getAllUsers() {
         try {
-            List<User> userList = userService.getAllUsers();
+            List<Users> usersList = userService.getAllUsers();
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(userList);
+                    .body(usersList);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

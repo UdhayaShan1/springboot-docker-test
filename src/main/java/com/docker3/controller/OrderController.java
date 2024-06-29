@@ -1,13 +1,17 @@
 package com.docker3.controller;
 
+import static com.docker3.util.Constants.DATE_TIME_FORMATTER;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.sql.ast.tree.predicate.BooleanExpressionPredicate;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecutionException;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.docker3.exception.order.OrderNotFoundException;
-import com.docker3.model.Order;
-import com.docker3.model.User;
+import com.docker3.model.Orders;
+import com.docker3.model.Users;
 import com.docker3.repository.UserRepository;
 import com.docker3.service.OrderService;
 
@@ -32,18 +36,17 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private UserRepository userRepository;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping("/getallorders")
-    public ResponseEntity<List<Order>> getAllOrders() {
+    public ResponseEntity<List<Orders>> getAllOrders() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(orderService.getAllOrders());
     }
 
     @GetMapping("/{personId}/order")
-    public ResponseEntity<List<Order>> getAllOrdersByUser(@PathVariable Long personId) {
-        Optional<User> user = userRepository.findById(personId);
+    public ResponseEntity<List<Orders>> getAllOrdersByUser(@PathVariable Long personId) {
+        Optional<Users> user = userRepository.findById(personId);
         return user.map(
                 value -> ResponseEntity.status(HttpStatus.OK).body(orderService.findAllOrdersByUser(value))).orElseGet(
                 () -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>()));
@@ -51,49 +54,49 @@ public class OrderController {
 
 
     @PostMapping("/addorder")
-    public ResponseEntity<Order> addOrder(@RequestBody Order order) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.addOrder(order));
+    public ResponseEntity<Orders> addOrder(@RequestBody Orders orders) {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.addOrder(orders));
     }
 
     @PostMapping("/addorder/{personId}")
-    public ResponseEntity<Order> addOrderWithPerson(@RequestBody Order order, @PathVariable Long personId) {
-        Optional<User> person = userRepository.findById(personId);
+    public ResponseEntity<Orders> addOrderWithPerson(@RequestBody Orders orders, @PathVariable Long personId) {
+        Optional<Users> person = userRepository.findById(personId);
         if (person.isPresent()) {
-            order.setUser(person.get());
-            return ResponseEntity.status(HttpStatus.OK).body(orderService.addOrder(order));
+            orders.setUsers(person.get());
+            return ResponseEntity.status(HttpStatus.OK).body(orderService.addOrder(orders));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @GetMapping("/getorders")
-    public ResponseEntity<List<Order>> getOrdersOfCurrentUser(HttpSession session) {
+    public ResponseEntity<List<Orders>> getOrdersOfCurrentUser(HttpSession session) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        User user = (User) session.getAttribute("user");
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllOrdersByUser(user));
+        Users users = (Users) session.getAttribute("user");
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findAllOrdersByUser(users));
     }
 
     @PostMapping("/neworder")
-    public ResponseEntity<Order> userAddOrder(@RequestBody Order order, HttpSession session) {
+    public ResponseEntity<Orders> userAddOrder(@RequestBody Orders orders, HttpSession session) {
         if (session.getAttribute("user") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        User user = (User) session.getAttribute("user");
-        User retrievedUser = userRepository.findByUsername(user.getUsername());
-        if (retrievedUser == null) {
+        Users users = (Users) session.getAttribute("user");
+        Users retrievedUsers = userRepository.findByUsername(users.getUsername());
+        if (retrievedUsers == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         }
-        order.setOrderId(LocalDateTime.now().format(formatter));
-        order.setUser(retrievedUser);
-        order.setDateOfOrder(LocalDate.now());
-        orderService.addOrder(order);
+        orders.setOrderId(LocalDateTime.now().format(DATE_TIME_FORMATTER));
+        orders.setUsers(retrievedUsers);
+        orders.setDateOfOrder(LocalDate.now());
+        orderService.addOrder(orders);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(order);
+                .body(orders);
     }
 
     @DeleteMapping("/deleteorder/{id}")
@@ -106,6 +109,16 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (OrderNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping("/runjob")
+    public ResponseEntity<Void> runBatchJob() {
+        try {
+            orderService.runOrderBatchJob();
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (JobExecutionException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
