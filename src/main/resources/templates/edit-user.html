@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="/css/user-details.css">
+</head>
+<body>
+<h1>Update your details here!</h1>
+<div id="user-container">
+    <div id="user-details" style="display: none;">
+        <p><strong>Username:</strong> <span id="user-name"></span></p>
+        <p><strong>Email:</strong> <span id="user-email"></span></p>
+        <button id="edit-user-button">Edit</button>
+    </div>
+    <div id="edit-user-form" style="display: none;">
+        <form id="edit-form">
+            <label for="edit-name">Name:</label>
+            <input type="text" id="edit-name" name="name"><br><br>
+            <label for="edit-email">Email:</label>
+            <input type="email" id="edit-email" name="email"><br><br>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div id="error-message" class="error-message"></div>
+</div>
+<script src="/js/user-details.js"></script>
+</body>
+</html>

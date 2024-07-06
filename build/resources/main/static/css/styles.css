@@ -45,6 +45,15 @@ body {
     color: #fff;
 }
 
+.edit-user-btn {
+    background-color: #ffa07a;
+    color: #fff;
+}
+
+.edit-user-btn:hover {
+    background-color: #ff7f50;
+}
+
 .logout-btn {
     background-color: #ff9a9e;
     color: #fff;
