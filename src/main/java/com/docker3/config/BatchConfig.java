@@ -4,10 +4,9 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,30 +20,39 @@ import com.docker3.writer.OrderItemWriter;
 @Configuration
 @EnableBatchProcessing
 public class BatchConfig {
-    @Autowired
-    private OrderItemReader orderItemReader;
-    @Autowired
-    private OrderItemProcessor orderItemProcessor;
-    @Autowired
-    private OrderItemWriter orderItemWriter;
-    @Autowired
-    private UserRepository userRepository;
-
 
     @Bean
-    public Job importOrdersJob(JobRepository jobRepository, Step step1) {
+    public Job importOrdersJob(JobRepository jobRepository, Step importOrdersStep) {
         return new JobBuilder("importOrdersJob", jobRepository)
-                .start(step1)
+                .incrementer(new RunIdIncrementer())
+                .start(importOrdersStep)
                 .build();
     }
 
     @Bean
-    public Step step1(JobRepository jobRepository, PlatformTransactionManager transactionManager, FlatFileItemReader<Orders> reader) {
-        return new StepBuilder("step1", jobRepository)
+    public Step importOrdersStep(JobRepository jobRepository, PlatformTransactionManager transactionManager,
+                                 OrderItemReader orderItemReader, OrderItemProcessor orderItemProcessor,
+                                 OrderItemWriter orderItemWriter) {
+        return new StepBuilder("importOrdersStep", jobRepository)
                 .<Orders, Orders>chunk(10, transactionManager)
                 .reader(orderItemReader)
                 .processor(orderItemProcessor)
                 .writer(orderItemWriter)
                 .build();
+    }
+
+    @Bean
+    public OrderItemReader orderItemReader(UserRepository userRepository) {
+        return new OrderItemReader(userRepository);
+    }
+
+    @Bean
+    public OrderItemProcessor orderItemProcessor() {
+        return new OrderItemProcessor();
+    }
+
+    @Bean
+    public OrderItemWriter orderItemWriter() {
+        return new OrderItemWriter();
     }
 }

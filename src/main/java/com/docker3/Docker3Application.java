@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.ClassPathResource;
 
 @SpringBootApplication
-public class Docker3Application implements CommandLineRunner {
+public class Docker3Application {
     @Autowired
     private JobLauncher jobLauncher;
     @Autowired
@@ -23,9 +23,5 @@ public class Docker3Application implements CommandLineRunner {
         SpringApplication.run(Docker3Application.class, args);
     }
 
-    public void run(String... args) throws Exception {
-        jobLauncher.run(job, new JobParametersBuilder()
-                .addString("JobID", String.valueOf(System.currentTimeMillis()))
-                .toJobParameters());
-    }
+
 }
