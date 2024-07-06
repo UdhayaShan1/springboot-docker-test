@@ -38,10 +38,18 @@ function fetchOrders() {
                         <td>${order.descriptionOfOrder}</td>
                         <td>${order.users.id}</td>
                         <td>${order.users.username}</td>
-                        <td><button class="delete-btn" data-id="${order.id}">Delete</button></td>
+                        <td>
+                            <button class="edit-btn" data-id="${order.id}">Edit</button>
+                            <button class="delete-btn" data-id="${order.orderId}">Delete</button>
+                        </td>
                     </tr>
                 `;
                 ordersTableBody.append(row);
+            });
+
+            $('.edit-btn').click(function() {
+                const id = $(this).data('id');
+                editOrder(id);
             });
 
             $('.delete-btn').click(function() {
@@ -55,6 +63,9 @@ function fetchOrders() {
     });
 }
 
+function editOrder(id) {
+    window.location.href = `/editorder/${id}`;
+}
 
 document.getElementById("add-orders-form").addEventListener('submit', async function (event) {
     event.preventDefault();
