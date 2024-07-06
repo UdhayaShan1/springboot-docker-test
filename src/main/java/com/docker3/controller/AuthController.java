@@ -107,6 +107,14 @@ public class AuthController {
         return "edit-order";
     }
 
+    @GetMapping("/user/update")
+    public String updateUserPage(HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+        return "edit-user";
+    }
+
 
 
 
