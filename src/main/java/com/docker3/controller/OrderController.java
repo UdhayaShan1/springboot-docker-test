@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,6 +70,8 @@ public class OrderController {
         }
     }
 
+    //Actual web controllers
+
     @GetMapping("/getorders")
     public ResponseEntity<List<Orders>> getOrdersOfCurrentUser(HttpSession session) {
         if (session.getAttribute("user") == null) {
@@ -112,16 +115,43 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/runjob")
-    public ResponseEntity<Void> runBatchJob() {
+    @GetMapping("/edit/displayorder")
+    public ResponseEntity<Orders> getOrderBasedOnId(HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (session.getAttribute("orderIdToEdit") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        Long orderId = (Long) session.getAttribute("orderIdToEdit");
         try {
-            orderService.runOrderBatchJob();
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (JobExecutionException e) {
+            Orders orders = orderService.getOrderBasedOnId(orderId);
+            return ResponseEntity.status(HttpStatus.OK).body(orders);
+        } catch (OrderNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
+    @PutMapping("/edit/updateorder")
+    public ResponseEntity<Void> updateOrderOnEditPage(@RequestBody Orders orders, HttpSession session) {
+        System.out.println(session);
+        if (session.getAttribute("user") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (session.getAttribute("orderIdToEdit") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        System.out.println(orders);
+        try {
+            orderService.updateOrderOnEditPage((Long) session.getAttribute("orderIdToEdit"), orders);
+            session.removeAttribute("orderIdToEdit");
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (OrderNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+
+    }
 
 
 

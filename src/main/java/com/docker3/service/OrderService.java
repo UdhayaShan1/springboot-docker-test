@@ -1,6 +1,7 @@
 package com.docker3.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -24,10 +25,7 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private JobLauncher jobLauncher;
-    @Autowired
-    private Job job;
+
 
     public List<Orders> getAllOrders() {
         return orderRepository.findAll();
@@ -61,10 +59,28 @@ public class OrderService {
         }
     }
 
-    public void runOrderBatchJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        jobLauncher.run(job, new JobParametersBuilder()
-                .addString("JobID", String.valueOf(System.currentTimeMillis()))
-                .toJobParameters());
+    public Orders getOrderBasedOnId(Long id) throws OrderNotFoundException {
+        Optional<Orders> optionalOrders = orderRepository.findById(id);
+        if (optionalOrders.isEmpty()){
+            throw new OrderNotFoundException("Order with specified ID not found");
+        }
+        return optionalOrders.get();
     }
+
+    public void updateOrderOnEditPage(Long id, Orders orders) throws OrderNotFoundException {
+        Orders orderToUpdate = getOrderBasedOnId(id);
+        if (!orders.getNameOfOrder().isEmpty()) {
+            orderToUpdate.setNameOfOrder(orders.getNameOfOrder());
+        }
+        if (orders.getDateOfOrder() != null) {
+            orderToUpdate.setDateOfOrder(orders.getDateOfOrder());
+        }
+        if (!orders.getDescriptionOfOrder().isEmpty()) {
+            orderToUpdate.setDescriptionOfOrder(orders.getDescriptionOfOrder());
+        }
+        orderRepository.save(orderToUpdate);
+
+    }
+
 
 }
