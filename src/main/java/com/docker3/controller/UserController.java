@@ -2,7 +2,9 @@ package com.docker3.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.docker3.model.Users;
 import com.docker3.service.AuthService;
@@ -52,4 +55,22 @@ public class UserController {
         userService.updateUserFields(userInSessionContext, user);
         return ResponseEntity.ok().build();
     }
+
+
+    @PutMapping("/user/updatepassword")
+    public ResponseEntity<Void> updatePasswordOfLoggedInUser(@RequestBody Map<String, String> payload, HttpSession httpSession) {
+        String password = payload.get("password");
+        System.out.println(password);
+
+        Users user = (Users) httpSession.getAttribute("user");
+        System.out.println(user);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        userService.updatePasswordOfLoggedInUser(user, password);
+        // Force user to log in again
+        httpSession.invalidate();
+        return ResponseEntity.ok().build();
+    }
+
 }
