@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service;
 import com.docker3.exception.user.UserNotFoundException;
 import com.docker3.model.Users;
 import com.docker3.repository.UserRepository;
+import com.docker3.util.PasswordEncoder;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Users> getAllUsers() {
         return userRepository.findAll();
@@ -33,6 +36,11 @@ public class UserService {
             userInSession.setEmail(refUser.getEmail());
         }
         userRepository.save(userInSession);
+    }
+
+    public void updatePasswordOfLoggedInUser(Users loggedInUser, String password) {
+        loggedInUser.setPassword(passwordEncoder.encode(password));
+        userRepository.save(loggedInUser);
     }
 
 }
